@@ -1,24 +1,10 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { BASE_BOARD, Board, Team, getPossibleMoves, Square } from "../lib";
+import { ref } from "vue";
+import { BASE_BOARD, Board, Team, Square } from "../lib";
 
 const turn = ref<Team>("white");
 const selected = ref<undefined | Square>(undefined);
 const board = ref<Board>(BASE_BOARD);
-
-function reset() {
-	turn.value = "white";
-	selected.value = undefined;
-	board.value = BASE_BOARD;
-}
-
-const hints = ref<undefined | number[]>(undefined);
-
-watch(selected, (n, o) => {
-	if (n === o) return;
-	if (selected.value)
-		hints.value = getPossibleMoves(selected.value, board.value);
-});
 </script>
 
 <template>
@@ -26,42 +12,37 @@ watch(selected, (n, o) => {
 	<div class="board">
 		<div
 			v-for="sq in board"
+			:key="sq.pos"
 			:class="
-				'row-' + (Math.floor(sq.pos / 8) % 2 === 0 ? 'even' : 'odd') + ' square'
+				[
+					'row-' + (Math.floor(sq.pos / 8) % 2 === 0 ? 'even' : 'odd'),
+					'square',
+				].join(' ')
 			"
 			:selected="selected && selected.pos === sq.pos"
 			:team="sq.team"
 			:piece="sq.piece"
 			@click="
 				() => {
-					if (sq.team !== turn) return;
-					if (selected && selected.pos === sq.pos) {
+					if (!selected) {
+						if (sq.piece !== 'none' && sq.team === turn) selected = sq;
+					} else if (selected.pos === sq.pos) {
 						selected = undefined;
-					} else {
-						selected = sq;
-					}
-				}
-			"
-		>
-			<div
-				v-if="selected && hints?.find((pos) => pos == sq.pos)"
-				class="hint"
-				@click="
-					() => {
-						if (!selected || !selected.pos) return;
-						board[sq.pos] = board[selected.pos];
+					} else if (
+						selected.moves().includes(sq.pos) &&
+						sq.team !== selected.team
+					) {
+						board[sq.pos].piece = board[selected.pos].piece;
+						board[sq.pos].team = board[selected.pos].team;
 						board[selected.pos].piece = 'none';
 						board[selected.pos].team = 'none';
 						selected = undefined;
 						turn = turn === 'white' ? 'black' : 'white';
 					}
-				"
-			>
-				<div></div>
-			</div>
-		</div>
+				}
+			"
+		></div>
 	</div>
-	<button @click="reset">Reset</button>
 </template>
 
 <style>

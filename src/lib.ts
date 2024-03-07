@@ -10,17 +10,6 @@ export type Team = "white" | "black" | "none";
 
 export type Board = Square[];
 
-export class _Square {
-	public piece: Piece;
-	public team: Team;
-	public pos?: number;
-
-	constructor(piece: Piece, team: Team) {
-		this.piece = piece;
-		this.team = team;
-	}
-}
-
 export class Square {
 	public piece: Piece;
 	public team: Team;
@@ -31,12 +20,26 @@ export class Square {
 		this.team = team;
 		this.pos = pos;
 	}
+
+	moves() {
+		return Array.from({ length: 64 }).map((_, idx) => idx);
+	}
+
+	up() {
+		if (this.pos < 8) return undefined;
+		return this.pos - 8;
+	}
+
+	down() {
+		if (this.pos > 64 - 8) return undefined;
+		return this.pos + 8;
+	}
 }
 
-export const EMPTC_ROW = new Array(8).fill(new _Square("none", "none"));
-
+export const EMPTY_ROW = () =>
+	Array.from({ length: 8 }, (_, i) => new Square("none", "none", i));
 export const PAWN_ROW = (team: Team) =>
-	new Array(8).fill(new _Square("pawn", team));
+	Array.from({ length: 8 }, () => new Square("pawn", team, -1));
 export const HOME_ROW = (team: Team) =>
 	(
 		[
@@ -49,25 +52,20 @@ export const HOME_ROW = (team: Team) =>
 			"knight",
 			"rook",
 		] as Piece[]
-	).map((piece) => new _Square(piece, team));
+	).map((piece) => new Square(piece, team, -1));
 
 export const BASE_BOARD = [
 	HOME_ROW("black"),
 	PAWN_ROW("black"),
-	EMPTC_ROW,
-	EMPTC_ROW,
-	EMPTC_ROW,
-	EMPTC_ROW,
+	EMPTY_ROW(),
+	EMPTY_ROW(),
+	EMPTY_ROW(),
+	EMPTY_ROW(),
 	PAWN_ROW("white"),
 	HOME_ROW("white"),
 ]
 	.flat()
-	.map((sq: _Square, idx) => new Square(sq.piece, sq.team, idx)) as Board;
-
-export function getPossibleMoves(square: Square, board: Board): number[] {
-	const moves: number[] = [];
-
-	moves.push(53);
-
-	return moves;
-}
+	.map((sq: Square, idx) => {
+		sq.pos = idx;
+		return sq;
+	}) as Board;
