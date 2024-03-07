@@ -1,106 +1,137 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import {
-	BASE_BOARD,
-	Board,
-	Piece,
-	Position,
-	Side,
-	getPossibleMoves,
-} from "../lib";
+import { BASE_BOARD, Board, Team, getPossibleMoves, Square } from "../lib";
 
-const turn = ref<Side>(Side.White);
-const selected = ref<undefined | Position>(undefined);
+const turn = ref<Team>("white");
+const selected = ref<undefined | Square>(undefined);
 const board = ref<Board>(BASE_BOARD);
 
-const possibleMoves = ref<undefined | Position[]>(undefined);
+function reset() {
+	turn.value = "white";
+	selected.value = undefined;
+	board.value = BASE_BOARD;
+}
 
-watch(selected, () => {
+const hints = ref<undefined | number[]>(undefined);
+
+watch(selected, (n, o) => {
+	if (n === o) return;
 	if (selected.value)
-		possibleMoves.value = getPossibleMoves(selected.value, board.value);
-	console.log({ possibleMoves });
+		hints.value = getPossibleMoves(selected.value, board.value);
 });
 </script>
 
 <template>
 	<p>Turn: {{ turn }}</p>
 	<div class="board">
-		<div class="row" v-for="(row, rIdx) in board">
+		<div
+			v-for="sq in board"
+			:class="
+				'row-' + (Math.floor(sq.pos / 8) % 2 === 0 ? 'even' : 'odd') + ' square'
+			"
+			:selected="selected && selected.pos === sq.pos"
+			:team="sq.team"
+			:piece="sq.piece"
+			@click="
+				() => {
+					if (sq.team !== turn) return;
+					if (selected && selected.pos === sq.pos) {
+						selected = undefined;
+					} else {
+						selected = sq;
+					}
+				}
+			"
+		>
 			<div
-				class="square"
-				v-for="(col, cIdx) in row"
-				:selected="selected && selected[0] === rIdx && selected[1] === cIdx"
+				v-if="selected && hints?.find((pos) => pos == sq.pos)"
+				class="hint"
+				@click="
+					() => {
+						if (!selected || !selected.pos) return;
+						board[sq.pos] = board[selected.pos];
+						board[selected.pos].piece = 'none';
+						board[selected.pos].team = 'none';
+						selected = undefined;
+						turn = turn === 'white' ? 'black' : 'white';
+					}
+				"
 			>
-				<img
-					v-if="col[0] !== Piece.None"
-					:src="
-						'/pieces/' +
-						Side[col[1]].toLowerCase() +
-						'/' +
-						Piece[col[0]].toLowerCase() +
-						'.svg'
-					"
-					class="piece"
-					@click="
-						() => {
-							if (selected && selected[0] === rIdx && selected[1] == cIdx) {
-								selected = undefined;
-							} else {
-								selected = [rIdx, cIdx] as Position
-							}
-						}
-					"
-				/>
-				<div
-					v-if="
-						selected &&
-						possibleMoves?.find(([r, c]) => r === rIdx && c === cIdx)
-					"
-					class="possible"
-				>
-					<div class="circle"></div>
-				</div>
+				<div></div>
 			</div>
 		</div>
 	</div>
+	<button @click="reset">Reset</button>
 </template>
 
 <style>
 .board {
-	display: flex;
-	flex-direction: column;
-	gap: 0.3rem;
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	grid-template-rows: repeat(8, 1fr);
+	grid-gap: 0.3rem;
 	--light: #adadad;
 	--dark: #8e3b46;
-}
-.row {
-	display: flex;
-	flex-direction: row;
-	gap: 0.3rem;
 }
 .square {
 	width: 50px;
 	height: 50px;
-	--square-bg: var(--dark);
-	background-color: var(--square-bg);
+	background-color: var(--dark);
 }
-.row:nth-of-type(odd) .square:nth-of-type(odd),
-.row:nth-of-type(even) .square:nth-of-type(even) {
-	--square-bg: var(--light);
+.square:not(.square[team="none"]) {
+	background-position: 50%;
 }
-.piece {
-	width: -webkit-fill-available;
-	height: -webkit-fill-available;
+.square[team="black"][piece="pawn"] {
+	background-image: url("/pieces/black/pawn.svg");
+}
+.square[team="white"][piece="pawn"] {
+	background-image: url("/pieces/white/pawn.svg");
+}
+.square[team="black"][piece="knight"] {
+	background-image: url("/pieces/black/knight.svg");
+}
+.square[team="white"][piece="knight"] {
+	background-image: url("/pieces/white/knight.svg");
+}
+.square[team="black"][piece="bishop"] {
+	background-image: url("/pieces/black/bishop.svg");
+}
+.square[team="white"][piece="bishop"] {
+	background-image: url("/pieces/white/bishop.svg");
+}
+.square[team="black"][piece="rook"] {
+	background-image: url("/pieces/black/rook.svg");
+}
+.square[team="white"][piece="rook"] {
+	background-image: url("/pieces/white/rook.svg");
+}
+.square[team="black"][piece="queen"] {
+	background-image: url("/pieces/black/queen.svg");
+}
+.square[team="white"][piece="queen"] {
+	background-image: url("/pieces/white/queen.svg");
+}
+.square[team="black"][piece="king"] {
+	background-image: url("/pieces/black/king.svg");
+}
+.square[team="white"][piece="king"] {
+	background-image: url("/pieces/white/king.svg");
+}
+.row-even.square:nth-child(odd) {
+	background-color: var(--light);
+}
+.row-odd.square:nth-child(even) {
+	background-color: var(--light);
 }
 .square[selected="true"] {
 	background-color: #ffc65c !important;
 }
-.possible {
+.hint {
 	position: relative;
 	width: 50px;
 	height: 50px;
 }
-.possible .circle {
+.hint > div {
 	position: absolute;
 	top: 50%;
 	left: 50%;
