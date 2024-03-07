@@ -139,7 +139,7 @@ export class Square {
 						if (!isRealCoord(right) || board[toPos(right)].team === this.team) {
 							checks.right = false;
 						} else {
-							if (!["none", this.team].includes(board[toPos(right)].team)) {
+							if (this.isOtherTeam(board[toPos(right)].team)) {
 								checks.right = false;
 							}
 							moves.push(right);
@@ -150,11 +150,50 @@ export class Square {
 						if (!isRealCoord(left) || board[toPos(left)].team === this.team) {
 							checks.left = false;
 						} else {
-							if (!["none", this.team].includes(board[toPos(left)].team)) {
+							if (this.isOtherTeam(board[toPos(left)].team)) {
 								checks.left = false;
 							}
 							moves.push(left);
 						}
+					}
+				}
+				break;
+			}
+			case "rook": {
+				for (let i = y + 1; i < 8; i++) {
+					if (board[toPos([x, i])].team === this.team) {
+						break;
+					}
+					moves.push([x, i]);
+					if (this.isOtherTeam(board[toPos([x, i])].team)) {
+						break;
+					}
+				}
+				for (let i = y - 1; i > -1; i--) {
+					if (board[toPos([x, i])].team === this.team) {
+						break;
+					}
+					moves.push([x, i]);
+					if (this.isOtherTeam(board[toPos([x, i])].team)) {
+						break;
+					}
+				}
+				for (let j = x + 1; j < 8; j++) {
+					if (board[toPos([j, y])].team === this.team) {
+						break;
+					}
+					moves.push([j, y]);
+					if (this.isOtherTeam(board[toPos([j, y])].team)) {
+						break;
+					}
+				}
+				for (let j = x - 1; j > -1; j--) {
+					if (board[toPos([j, y])].team === this.team) {
+						break;
+					}
+					moves.push([j, y]);
+					if (this.isOtherTeam(board[toPos([j, y])].team)) {
+						break;
 					}
 				}
 				break;
@@ -186,6 +225,10 @@ export class Square {
 
 	x() {
 		return this.pos % 8;
+	}
+
+	isOtherTeam(team: Team) {
+		return !["none", this.team].includes(team);
 	}
 }
 
