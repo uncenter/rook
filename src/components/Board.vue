@@ -14,22 +14,22 @@ const board = ref<Board>(BASE_BOARD);
 			v-for="sq in board"
 			:key="sq.pos"
 			:class="
-				[
-					'row-' + (Math.floor(sq.pos / 8) % 2 === 0 ? 'even' : 'odd'),
-					'square',
-				].join(' ')
+				['row-' + (sq.y() % 2 === 0 ? 'even' : 'odd'), 'square'].join(' ')
 			"
 			:selected="selected && selected.pos === sq.pos"
 			:team="sq.team"
 			:piece="sq.piece"
 			@click="
 				() => {
-					if (!selected) {
-						if (sq.piece !== 'none' && sq.team === turn) selected = sq;
+					if (
+						!selected ||
+						(selected && sq.piece !== 'none' && sq.team === turn)
+					) {
+						if (sq.team === turn) selected = sq;
 					} else if (selected.pos === sq.pos) {
 						selected = undefined;
 					} else if (
-						selected.moves().includes(sq.pos) &&
+						selected.moves(board).includes(sq.pos) &&
 						sq.team !== selected.team
 					) {
 						board[sq.pos].piece = board[selected.pos].piece;

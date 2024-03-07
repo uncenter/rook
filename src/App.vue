@@ -4,7 +4,7 @@ import Board from "./components/Board.vue";
 
 <template>
 	<div class="container">
-		<h1>Rook</h1>
+		<h2>Rook</h2>
 		<Board />
 	</div>
 </template>
