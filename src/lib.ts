@@ -57,7 +57,7 @@ export class Square {
 				for (const diag of diags) {
 					if (
 						isRealCoord(diag) &&
-						!['none', this.team].includes(board[toPos(diag)].team)
+						this.isOtherTeam(board[toPos(diag)].team)
 					) {
 						moves.push(diag);
 					}
@@ -79,7 +79,7 @@ export class Square {
 				for (const diag of diags) {
 					if (
 						isRealCoord(diag) &&
-						!['none', this.team].includes(board[toPos(diag)].team)
+						this.isOtherTeam(board[toPos(diag)].team)
 					) {
 						moves.push(diag);
 					}
@@ -112,11 +112,7 @@ export class Square {
 					) {
 						checks.right = false;
 					} else {
-						if (
-							['none', this.team].includes(
-								board[toPos(right)].team,
-							)
-						) {
+						if (this.isOtherTeam(board[toPos(right)].team)) {
 							checks.right = false;
 						}
 						moves.push(right);
@@ -130,11 +126,7 @@ export class Square {
 					) {
 						checks.left = false;
 					} else {
-						if (
-							!['none', this.team].includes(
-								board[toPos(left)].team,
-							)
-						) {
+						if (this.isOtherTeam(board[toPos(left)].team)) {
 							checks.left = false;
 						}
 						moves.push(left);
