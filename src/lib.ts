@@ -10,12 +10,8 @@ export type Team = "white" | "black" | "none";
 
 export type Board = Square[];
 
-function toPos(x: number, y: number) {
+function toPos([x, y]: number[]) {
 	return y * 8 + x;
-}
-
-function isRealMove(pos: number) {
-	return pos < 64 && pos > -1;
 }
 
 export class Square {
@@ -30,68 +26,158 @@ export class Square {
 	}
 
 	moves(board: Board) {
-		let moves = [];
+		let moves: number[][] = [];
+
 		const x = this.x();
 		const y = this.y();
+
+		const isRealMove = (pos: number) => {
+			return board[pos].team !== this.team;
+		};
+
+		const isRealCoord = ([x, y]: number[]) => {
+			return x < 8 && x > -1 && y < 8 && y > -1;
+		};
+
 		switch (this.piece) {
 			case "pawn": {
 				if (this.team === "black") {
-					const forwards = [toPos(x, y + 1)];
-					if (y === 1) forwards.push(toPos(x, y + 2));
+					const forwards = [[x, y + 1]];
+					if (y === 1) forwards.push([x, y + 2]);
 
-					for (const fwd of forwards.filter(isRealMove)) {
-						if (board[fwd].team === "none") {
+					for (const fwd of forwards) {
+						if (isRealCoord(fwd) && board[toPos(fwd)].team === "none") {
 							moves.push(fwd);
 						}
 					}
 
-					const diags = [toPos(x - 1, y + 1), toPos(x + 1, y + 1)];
-					for (const diag of diags.filter(isRealMove)) {
-						if (board[diag].team === "white") {
+					const diags = [
+						[x - 1, y + 1],
+						[x + 1, y + 1],
+					];
+					for (const diag of diags) {
+						if (
+							isRealCoord(diag) &&
+							!["none", this.team].includes(board[toPos(diag)].team)
+						) {
 							moves.push(diag);
 						}
 					}
 				} else if (this.team === "white") {
-					const forwards = [toPos(x, y - 1)];
-					if (y === 6) forwards.push(toPos(x, y - 2));
+					const forwards = [[x, y - 1]];
+					if (y === 6) forwards.push([x, y - 2]);
 
-					for (const fwd of forwards.filter(isRealMove)) {
-						if (board[fwd].team === "none") {
+					for (const fwd of forwards) {
+						if (isRealCoord(fwd) && board[toPos(fwd)].team === "none") {
 							moves.push(fwd);
 						}
 					}
 
-					const diags = [toPos(x - 1, y - 1), toPos(x + 1, y - 1)];
-					for (const diag of diags.filter(isRealMove)) {
-						if (board[diag].team === "black") {
+					const diags = [
+						[x - 1, y - 1],
+						[x + 1, y - 1],
+					];
+					for (const diag of diags) {
+						if (
+							isRealCoord(diag) &&
+							!["none", this.team].includes(board[toPos(diag)].team)
+						) {
 							moves.push(diag);
+						}
+					}
+				}
+				break;
+			}
+			case "knight": {
+				moves = [
+					[x - 2, y + 1],
+					[x - 2, y - 1],
+					[x + 2, y + 1],
+					[x + 2, y - 1],
+					[x + 1, y + 2],
+					[x + 1, y - 2],
+					[x - 1, y + 2],
+					[x - 1, y - 2],
+				].filter(isRealCoord);
+
+				break;
+			}
+			case "bishop": {
+				const checks = {
+					left: true,
+					right: true,
+				};
+				for (let i = y + 1; i < 8; i++) {
+					if (checks.right) {
+						const right = [x + (i - y), i];
+						if (!isRealCoord(right) || board[toPos(right)].team === this.team) {
+							checks.right = false;
+						} else {
+							if (["none", this.team].includes(board[toPos(right)].team)) {
+								checks.right = false;
+							}
+							moves.push(right);
+						}
+					}
+					if (checks.left) {
+						const left = [x - (i - y), i];
+						if (!isRealCoord(left) || board[toPos(left)].team === this.team) {
+							checks.left = false;
+						} else {
+							if (!["none", this.team].includes(board[toPos(left)].team)) {
+								checks.left = false;
+							}
+							moves.push(left);
+						}
+					}
+				}
+				checks.left = true;
+				checks.right = true;
+				for (let i = y - 1; i > -1; i--) {
+					if (checks.right) {
+						const right = [x + (i - y), i];
+						if (!isRealCoord(right) || board[toPos(right)].team === this.team) {
+							checks.right = false;
+						} else {
+							if (!["none", this.team].includes(board[toPos(right)].team)) {
+								checks.right = false;
+							}
+							moves.push(right);
+						}
+					}
+					if (checks.left) {
+						const left = [x - (i - y), i];
+						if (!isRealCoord(left) || board[toPos(left)].team === this.team) {
+							checks.left = false;
+						} else {
+							if (!["none", this.team].includes(board[toPos(left)].team)) {
+								checks.left = false;
+							}
+							moves.push(left);
 						}
 					}
 				}
 				break;
 			}
 			case "king": {
-				const sides = [
-					toPos(x, y + 1),
-					toPos(x, y - 1),
-					toPos(x + 1, y),
-					toPos(x - 1, y),
+				moves = [
+					[x, y + 1],
+					[x, y - 1],
 
-					toPos(x + 1, y + 1),
-					toPos(x - 1, y - 1),
-					toPos(x + 1, y - 1),
-					toPos(x - 1, y + 1),
-				];
-				for (const side of sides.filter(isRealMove)) {
-					moves.push(side);
-				}
+					[x + 1, y],
+					[x - 1, y],
+
+					[x + 1, y + 1],
+					[x - 1, y - 1],
+
+					[x + 1, y - 1],
+					[x - 1, y + 1],
+				].filter(isRealCoord);
+
 				break;
 			}
-			default: {
-				moves = Array.from({ length: 64 }).map((_, idx) => idx);
-			}
 		}
-		return moves;
+		return moves.map((move) => toPos(move)).filter(isRealMove);
 	}
 
 	y() {

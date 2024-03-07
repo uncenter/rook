@@ -19,6 +19,7 @@ const board = ref<Board>(BASE_BOARD);
 			:selected="selected && selected.pos === sq.pos"
 			:team="sq.team"
 			:piece="sq.piece"
+			:hint="selected?.moves(board).includes(sq.pos)"
 			@click="
 				() => {
 					if (
@@ -107,19 +108,7 @@ const board = ref<Board>(BASE_BOARD);
 .square[selected="true"] {
 	background-color: #ffc65c !important;
 }
-.hint {
-	position: relative;
-	width: 50px;
-	height: 50px;
-}
-.hint > div {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 15px;
-	height: 15px;
-	background-color: black;
-	border-radius: 50%;
+.square[hint="true"] {
+	background-color: #a6e1fa !important;
 }
 </style>
