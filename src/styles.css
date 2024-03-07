@@ -12,10 +12,7 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
-}
 
-.container {
-	margin: 0;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
