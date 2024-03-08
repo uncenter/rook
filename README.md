@@ -11,7 +11,20 @@ Mediocre chess application written with [Vue](https://vuejs.org/), [TypeScript](
 ```sh
 git clone https://github.com/uncenter/rook.git
 pnpm install
+```
+
+### Web
+
+```
+pnpm dev
+```
+
+### Desktop (Tauri app)
+
+```
 pnpm tauri dev
+# or
+pnpm tauri build
 ```
 
 ## Attribution
