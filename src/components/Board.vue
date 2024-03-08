@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { BASE_BOARD, Board, Team, Square } from '../lib';
+import { BASE_BOARD, Board, Team, Square, posify } from '../lib';
 
 const turn = ref<Team>('white');
 const selected = ref<undefined | Square>(undefined);
@@ -41,6 +41,7 @@ const board = ref<Board>(BASE_BOARD);
 						board[selected.pos].team = 'none';
 						selected = undefined;
 						turn = turn === 'white' ? 'black' : 'white';
+						board = posify(board.slice().reverse());
 					}
 				}
 			"

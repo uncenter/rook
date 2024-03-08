@@ -6,13 +6,10 @@ export type Piece =
 	| 'queen'
 	| 'king'
 	| 'none';
+
 export type Team = 'white' | 'black' | 'none';
 
 export type Board = Square[];
-
-function toPos([x, y]: number[]) {
-	return y * 8 + x;
-}
 
 export class Square {
 	public piece: Piece;
@@ -31,6 +28,10 @@ export class Square {
 		const x = this.x();
 		const y = this.y();
 
+		const toPos = ([x, y]: number[]) => {
+			return y * 8 + x;
+		};
+
 		const isRealMove = (pos: number) => {
 			return board[pos].team !== this.team;
 		};
@@ -40,49 +41,25 @@ export class Square {
 		};
 
 		if (this.piece === 'pawn') {
-			if (this.team === 'black') {
-				const forwards = [[x, y + 1]];
-				if (y === 1) forwards.push([x, y + 2]);
+			const forwards = [[x, y - 1]];
+			if (y === 6) forwards.push([x, y - 2]);
 
-				for (const fwd of forwards) {
-					if (isRealCoord(fwd) && board[toPos(fwd)].team === 'none') {
-						moves.push(fwd);
-					}
+			for (const fwd of forwards) {
+				if (isRealCoord(fwd) && board[toPos(fwd)].team === 'none') {
+					moves.push(fwd);
 				}
+			}
 
-				const diags = [
-					[x - 1, y + 1],
-					[x + 1, y + 1],
-				];
-				for (const diag of diags) {
-					if (
-						isRealCoord(diag) &&
-						this.isOtherTeam(board[toPos(diag)].team)
-					) {
-						moves.push(diag);
-					}
-				}
-			} else if (this.team === 'white') {
-				const forwards = [[x, y - 1]];
-				if (y === 6) forwards.push([x, y - 2]);
-
-				for (const fwd of forwards) {
-					if (isRealCoord(fwd) && board[toPos(fwd)].team === 'none') {
-						moves.push(fwd);
-					}
-				}
-
-				const diags = [
-					[x - 1, y - 1],
-					[x + 1, y - 1],
-				];
-				for (const diag of diags) {
-					if (
-						isRealCoord(diag) &&
-						this.isOtherTeam(board[toPos(diag)].team)
-					) {
-						moves.push(diag);
-					}
+			const diags = [
+				[x - 1, y - 1],
+				[x + 1, y - 1],
+			];
+			for (const diag of diags) {
+				if (
+					isRealCoord(diag) &&
+					this.isOtherTeam(board[toPos(diag)].team)
+				) {
+					moves.push(diag);
 				}
 			}
 		}
@@ -253,18 +230,22 @@ export const HOME_ROW = (team: Team) =>
 		] as Piece[]
 	).map((piece) => new Square(piece, team, -1));
 
-export const BASE_BOARD = [
-	HOME_ROW('black'),
-	PAWN_ROW('black'),
-	EMPTY_ROW(),
-	EMPTY_ROW(),
-	EMPTY_ROW(),
-	EMPTY_ROW(),
-	PAWN_ROW('white'),
-	HOME_ROW('white'),
-]
-	.flat()
-	.map((sq: Square, idx) => {
+export const BASE_BOARD = posify(
+	[
+		HOME_ROW('black'),
+		PAWN_ROW('black'),
+		EMPTY_ROW(),
+		EMPTY_ROW(),
+		EMPTY_ROW(),
+		EMPTY_ROW(),
+		PAWN_ROW('white'),
+		HOME_ROW('white'),
+	].flat(),
+);
+
+export function posify(board: Board) {
+	return board.map((sq: Square, idx) => {
 		sq.pos = idx;
 		return sq;
 	}) as Board;
+}
