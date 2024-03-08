@@ -1,8 +1,7 @@
-<h1 align="center">
-  <span>Rook</span>
-  &nbsp;
-  <img src="./src-tauri/icons/icon.png" width="25" />
-</h1>
+<div align="center">
+  <img src="./assets/rook.png" width="100" />
+  <h1>Rook</h1>
+</div>
 
 Mediocre chess application written with [Vue](https://vuejs.org/), [TypeScript](https://www.typescriptlang.org/), and [Tauri](https://tauri.app/).
 
