@@ -26,6 +26,19 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
+## Roadmap
+
+- [x] Basic chessboard layout
+- [x] Moveable pieces
+- [x] Implement available moves function
+- [x] Flip board after each turn
+- [ ] Implement check and checkmate states
+- [ ] Add homescreen interface
+  - [ ] New game, load from save
+  - [ ] Settings
+  - [ ] Theme customization
+- [ ] Play against a bot
+
 ## Attribution
 
 Chess piece icons (and the logo of this project, though adapted) were sourced from [Category:SVG chess pieces - Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces) and used under the GNU GPL license. All credit in that regard goes to [Cburnett](https://en.wikipedia.org/wiki/User:Cburnett) for their work in creating the icons.
