@@ -2,5 +2,7 @@ node_modules/
 target/
 dist/
 
+auto-imports.d.ts
+
 .DS_Store
 Thumbs.db

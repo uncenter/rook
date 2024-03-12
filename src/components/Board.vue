@@ -1,14 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { BASE_BOARD, Board, Team, Square, posify } from '../lib';
+import type { Board, Team, Square } from '../lib';
+import {
+	createEmptyRow,
+	createHomeRow,
+	createPawnRow,
+	setBoardPositions,
+} from '../lib';
 
 const turn = ref<Team>('white');
 const selected = ref<undefined | Square>(undefined);
-const board = ref<Board>(BASE_BOARD);
+const board = ref<Board>(
+	setBoardPositions(
+		[
+			createHomeRow('black'),
+			createPawnRow('black'),
+			createEmptyRow(),
+			createEmptyRow(),
+			createEmptyRow(),
+			createEmptyRow(),
+			createPawnRow('white'),
+			createHomeRow('white'),
+		].flat(),
+	),
+);
 </script>
 
 <template>
-	<p>Turn: {{ turn }}</p>
 	<div class="board">
 		<div
 			v-for="sq in board"
@@ -41,7 +58,7 @@ const board = ref<Board>(BASE_BOARD);
 						board[selected.pos].team = 'none';
 						selected = undefined;
 						turn = turn === 'white' ? 'black' : 'white';
-						board = posify(board.slice().reverse());
+						board = setBoardPositions(board.slice().reverse());
 					}
 				}
 			"

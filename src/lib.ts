@@ -23,6 +23,7 @@ export class Square {
 	}
 
 	moves(board: Board) {
+		console.log('Checking moves... 🪄');
 		let moves: number[][] = [];
 
 		const x = this.x();
@@ -212,11 +213,11 @@ export class Square {
 	}
 }
 
-export const EMPTY_ROW = () =>
+export const createEmptyRow = () =>
 	Array.from({ length: 8 }, (_, i) => new Square('none', 'none', i));
-export const PAWN_ROW = (team: Team) =>
+export const createPawnRow = (team: Team) =>
 	Array.from({ length: 8 }, () => new Square('pawn', team, -1));
-export const HOME_ROW = (team: Team) =>
+export const createHomeRow = (team: Team) =>
 	(
 		[
 			'rook',
@@ -230,20 +231,7 @@ export const HOME_ROW = (team: Team) =>
 		] as Piece[]
 	).map((piece) => new Square(piece, team, -1));
 
-export const BASE_BOARD = posify(
-	[
-		HOME_ROW('black'),
-		PAWN_ROW('black'),
-		EMPTY_ROW(),
-		EMPTY_ROW(),
-		EMPTY_ROW(),
-		EMPTY_ROW(),
-		PAWN_ROW('white'),
-		HOME_ROW('white'),
-	].flat(),
-);
-
-export function posify(board: Board) {
+export function setBoardPositions(board: Board) {
 	return board.map((sq: Square, idx) => {
 		sq.pos = idx;
 		return sq;
