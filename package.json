@@ -5,9 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "vue-tsc --noEmit && vite build",
-		"preview": "vite preview",
-		"tauri": "tauri",
+		"build": "vite build",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
@@ -22,7 +20,6 @@
 		"typescript": "^5.0.2",
 		"unplugin-auto-import": "^0.17.5",
 		"unplugin-turbo-console": "^1.4.1",
-		"vite": "^5.0.0",
-		"vue-tsc": "^1.8.5"
+		"vite": "^5.0.0"
 	}
 }
