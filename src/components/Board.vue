@@ -6,6 +6,7 @@ import {
 	createPawnRow,
 	setBoardPositions,
 } from '../lib';
+import pieces from '../pieces';
 
 const turn = ref<Team>('white');
 const selected = ref<undefined | Square>(undefined);
@@ -35,9 +36,8 @@ const board = ref<Board>(
 					' ',
 				)
 			"
-			:selected="selected && selected.pos === sq.pos"
 			:team="sq.team"
-			:piece="sq.piece"
+			:selected="selected && selected.pos === sq.pos"
 			:hint="selected?.moves(board).includes(sq.pos)"
 			@click="
 				() => {
@@ -62,7 +62,12 @@ const board = ref<Board>(
 					}
 				}
 			"
-		></div>
+		>
+			<div
+				v-if="sq.piece !== 'none'"
+				v-html="pieces[sq.team][sq.piece]"
+			></div>
+		</div>
 	</div>
 </template>
 
@@ -72,63 +77,37 @@ const board = ref<Board>(
 	grid-template-columns: repeat(8, 1fr);
 	grid-template-rows: repeat(8, 1fr);
 	grid-gap: 0.3rem;
-	--light: #adadad;
-	--dark: #8e3b46;
 }
 .square {
 	width: 50px;
 	height: 50px;
-	background-color: var(--dark);
+	background-color: var(--red);
 }
-.square:not(.square[team='none']) {
-	background-position: 50%;
+.square,
+.square div {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
 }
-.square[team='black'][piece='pawn'] {
-	background-image: url('/pieces/black/pawn.svg');
+[team='white'] svg path {
+	fill: var(--white);
+	stroke: var(--white);
 }
-.square[team='white'][piece='pawn'] {
-	background-image: url('/pieces/white/pawn.svg');
-}
-.square[team='black'][piece='knight'] {
-	background-image: url('/pieces/black/knight.svg');
-}
-.square[team='white'][piece='knight'] {
-	background-image: url('/pieces/white/knight.svg');
-}
-.square[team='black'][piece='bishop'] {
-	background-image: url('/pieces/black/bishop.svg');
-}
-.square[team='white'][piece='bishop'] {
-	background-image: url('/pieces/white/bishop.svg');
-}
-.square[team='black'][piece='rook'] {
-	background-image: url('/pieces/black/rook.svg');
-}
-.square[team='white'][piece='rook'] {
-	background-image: url('/pieces/white/rook.svg');
-}
-.square[team='black'][piece='queen'] {
-	background-image: url('/pieces/black/queen.svg');
-}
-.square[team='white'][piece='queen'] {
-	background-image: url('/pieces/white/queen.svg');
-}
-.square[team='black'][piece='king'] {
-	background-image: url('/pieces/black/king.svg');
-}
-.square[team='white'][piece='king'] {
-	background-image: url('/pieces/white/king.svg');
+[team='black'] svg path {
+	fill: var(--black);
+	stroke: var(--black);
 }
 .row-even.square:nth-child(odd) {
-	background-color: var(--light);
+	background-color: var(--gray);
 }
 .row-odd.square:nth-child(even) {
-	background-color: var(--light);
+	background-color: var(--gray);
 }
 .square[selected='true'] {
-	background-color: #ffc65c !important;
+	background-color: var(--yellow) !important;
 }
 .square[hint='true'] {
-	background-color: #a6e1fa !important;
+	background-color: var(--blue) !important;
 }
 </style>
