@@ -33,6 +33,8 @@ pnpm tauri build
 - [x] Implement available moves function
 - [x] Flip board after each turn
 - [ ] Implement check and checkmate states
+- [ ] Implement [castling](https://en.wikipedia.org/wiki/Castling?useskin=vector), [en passant](https://en.wikipedia.org/wiki/En_passant)
+- [ ] Implement pawn promotions
 - [ ] Add homescreen interface
   - [ ] New game, load from save
   - [ ] Settings
